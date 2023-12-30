@@ -1,7 +1,8 @@
-function minimax(inputGame, isMaximizing) {
+function minimax(inputGame, isMaximizing, depth = 100) {
     // console.log(inputGame);
     // console.log(isMaximizing);
-    if (isTerminalState(inputGame)) return [evaluateGame(inputGame), ""];
+    if (isTerminalState(inputGame) || depth <= 0)
+        return [evaluateGame(inputGame), ""];
 
     let bestValue = 0;
     let bestMove = -1;
@@ -20,7 +21,11 @@ function minimax(inputGame, isMaximizing) {
         const newInputGame = deepCopy(inputGame);
         // console.log(newGame);
         computerMakeMove(newInputGame, move, symbol);
-        const hypotheticalValue = minimax(newInputGame, !isMaximizing)[0];
+        const hypotheticalValue = minimax(
+            newInputGame,
+            !isMaximizing,
+            depth - 1
+        )[0];
         // console.log(`${isMaximizing}: ${hypotheticalValue}`);
 
         if (isMaximizing) {
@@ -128,7 +133,7 @@ function availableMoves() {
 // htmlGameToArray();
 // console.log(availableMoves());
 
-function makeMove(board, move, symbol) {
+function makeMove(move, symbol) {
     cellElements[move].classList.add(
         symbol === "X" ? X_CLASS : symbol === "O" ? CIRCLE_CLASS : null
     );
@@ -168,11 +173,19 @@ function deepCopy(nestedArray) {
     return JSON.parse(JSON.stringify(nestedArray));
 }
 
-// look into why not working
+function evaluateGameState(gameState) {
+    // console.log(gameBoard);
+    let gameEval = null;
+    if (hasWon(gameState, "X")) gameEval = Infinity;
+    else if (hasWon(gameState, "O")) gameEval = -Infinity;
+    else gameEval = evaluateCurrentGameState(gameState);
 
-function evaluateCurrentPosition() {
-    return 0;
+    // printGameBoard(gameBoard);
+    // console.log(gameEval);
+    return gameEval;
 }
+
+function evaluateCurrentGameState(gameState) {}
 
 const my_board = [
     ["", "", "X"],
@@ -226,9 +239,10 @@ const tie = [
 // console.log(hasWon(my_board, "X"));
 // console.log(hasWon(my_board, "O"));
 
-console.log(minimax(x_winning, true));
-console.log(minimax(o_winning, true));
-console.log(minimax(new_game, true));
+// console.log(minimax(x_winning, true));
+// console.log(minimax(o_winning, true));
+// console.log(minimax(new_game, true));
+// console.log(minimax(new_game, true, 3));
 
 // const board1_status = isTerminalState(new_game);
 // const board2_status = isTerminalState(x_won);
@@ -244,4 +258,3 @@ console.log(minimax(new_game, true));
 // if (board2_status) console.log(evaluateGame(x_won));
 // if (board3_status) console.log(evaluateGame(o_won));
 // if (board4_status) console.log(evaluateGame(tie));
-

@@ -38,8 +38,20 @@ function startGame() {
 function handleClick(e) {
     // console.log("Clicked!");
     const cell = e.target;
+    if (
+        !(
+            cell.classList.contains(X_CLASS) ||
+            cell.classList.contains(CIRCLE_CLASS)
+        )
+    ) {
+        const currentClass = circleTurn ? CIRCLE_CLASS : X_CLASS;
+        placeMark(cell, currentClass);
+        handleAfterMove();
+    }
+}
+
+function handleAfterMove() {
     const currentClass = circleTurn ? CIRCLE_CLASS : X_CLASS;
-    placeMark(cell, currentClass);
     if (checkWin(currentClass)) {
         endGame(false);
     } else if (isDraw()) {
@@ -56,6 +68,13 @@ function placeMark(cell, currentClass) {
 
 function swapTurns() {
     circleTurn = !circleTurn;
+    if (circleTurn) {
+        const [computerValue, computerMove] = minimax(htmlGameToArray(), false);
+        setTimeout(() => {
+            makeMove(computerMove, "O");
+            handleAfterMove();
+        }, 500);
+    }
 }
 
 function setBoardHoverClass() {
